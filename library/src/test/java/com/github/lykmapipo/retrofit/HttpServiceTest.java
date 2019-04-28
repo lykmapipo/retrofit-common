@@ -13,6 +13,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * HttpService Tests
@@ -46,6 +47,14 @@ public class HttpServiceTest {
         assertEquals("should convert json to value", converted, user);
     }
 
+    @Test
+    public void shouldCreateSimpleService() {
+        String baseUrl = "https://api.example.com/v1/";
+        Api client = HttpService.create(Api.class, baseUrl);
+
+        assertNotNull("should create simple client", client);
+    }
+
     @Before
     public void tearDown() throws IOException {
         if (mockWebServer != null) {
@@ -54,7 +63,7 @@ public class HttpServiceTest {
     }
 
     public interface Api {
-        @GET("/users")
+        @GET("users")
         Call<List<User>> list();
     }
 }
