@@ -27,7 +27,14 @@ dependencies {
 Create services using `retrofit-commom`
 
 ```java
+public interface GitHubService {
+  @GET("users/{user}/repos")
+  Call<List<Repo>> listRepos(@Path("user") String user);
+}
+
 GitHubClient client = HttpService.create(GitHubClient.class);
+
+Call<List<Repo>> repos = service.listRepos("octocat");
 ```
 
 
