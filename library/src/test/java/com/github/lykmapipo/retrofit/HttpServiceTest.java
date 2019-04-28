@@ -1,5 +1,7 @@
 package com.github.lykmapipo.retrofit;
 
+import com.google.gson.annotations.Expose;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,13 +10,11 @@ import org.robolectric.RobolectricTestRunner;
 import java.io.IOException;
 import java.util.List;
 
-import lombok.Data;
 import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.Call;
 import retrofit2.http.GET;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * HttpService Tests
@@ -42,7 +42,10 @@ public class HttpServiceTest {
 
     @Test
     public void shouldConvertJsonToObject() {
-        assertTrue(true);
+        User user = new User("John Doe");
+        String json = "{\"name\":\"John Doe\"}";
+        User converted = HttpService.fromJson(json, User.class);
+        assertEquals("should convert json to value", converted, user);
     }
 
     @Before
@@ -58,10 +61,31 @@ public class HttpServiceTest {
     }
 
     public static class User {
+        @Expose
         String name;
 
         public User(String name) {
             this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            User user = (User) o;
+
+            return name != null ? name.equals(user.name) : user.name == null;
+        }
+
+        @Override
+        public int hashCode() {
+            return name != null ? name.hashCode() : 0;
+        }
+
+        @Override
+        public String toString() {
+            return name;
         }
     }
 }
