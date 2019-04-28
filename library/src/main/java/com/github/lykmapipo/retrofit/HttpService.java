@@ -9,9 +9,11 @@ import com.google.gson.GsonBuilder;
 import java.lang.reflect.Modifier;
 
 import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Service Retrofit HTTP Service creator
+ * Sensible retrofit http service(s) creator
  *
  * @author lally elias <lallyelias87@gmail.com>
  * @version 0.1.0
@@ -19,7 +21,7 @@ import okhttp3.OkHttpClient;
  */
 public class HttpService {
     /**
-     * Valid instance of {@link Gson} for converting values to json and from json
+     * Valid instance of {@link Gson} for reuse across retrofit instances.
      *
      * @since 0.1.0
      */
@@ -33,11 +35,24 @@ public class HttpService {
             .create();
 
     /**
-     * Valid instance of {@link okhttp3.OkHttpClient.Builder}
+     * Valid instance of {@link GsonConverterFactory} for reuse across
+     * retrofit instances.
      *
      * @since 0.1.0
      */
-    private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+    private static final GsonConverterFactory gsonFactory =
+            GsonConverterFactory.create(gson);
+
+    /**
+     * Valid instance of {@link okhttp3.OkHttpClient} for reuse across
+     * retrofit instances.
+     *
+     * @since 0.1.0
+     */
+    private static final OkHttpClient httpClient = new OkHttpClient();
+
+    private static final Retrofit.Builder retrofitBuilder =
+            new Retrofit.Builder().addConverterFactory(gsonFactory);
 
     /**
      * Helper method to convert a generic object value to a json string
