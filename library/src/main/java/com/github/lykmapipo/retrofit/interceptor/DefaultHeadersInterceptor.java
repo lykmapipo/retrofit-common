@@ -2,6 +2,8 @@ package com.github.lykmapipo.retrofit.interceptor;
 
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +23,11 @@ public class DefaultHeadersInterceptor implements Interceptor {
 
     private Map<String, String> providedHeaders;
 
-    public DefaultHeadersInterceptor(Map<String, String> providedHeaders) {
+    public DefaultHeadersInterceptor(@Nullable Map<String, String> providedHeaders) {
         this.providedHeaders = providedHeaders;
+    }
+
+    public DefaultHeadersInterceptor() {
     }
 
     @Override

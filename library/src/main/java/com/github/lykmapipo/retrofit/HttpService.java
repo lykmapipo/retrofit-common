@@ -3,6 +3,7 @@ package com.github.lykmapipo.retrofit;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.github.lykmapipo.retrofit.interceptor.DefaultHeadersInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -59,8 +60,7 @@ public class HttpService {
      */
     private static final Retrofit.Builder retrofitBuilder =
             new Retrofit.Builder()
-                    .addConverterFactory(gsonFactory)
-                    .client(httpClient);
+                    .addConverterFactory(gsonFactory);
 
     /**
      * Create an implementation of the API endpoints defined by the {@code service} interface.
@@ -73,8 +73,20 @@ public class HttpService {
     public static <S> S create(
             final Class<S> service, final String baseUrl
     ) {
-        // create retrofit client
-        Retrofit retrofit = retrofitBuilder.baseUrl(baseUrl).build();
+        // build http client with defaults
+        OkHttpClient client =
+                httpClient.newBuilder()
+                        .addInterceptor(new DefaultHeadersInterceptor())
+                        .build();
+
+        // create retrofit client with defaults
+        Retrofit retrofit =
+                retrofitBuilder
+                        .client(client)
+                        .baseUrl(baseUrl)
+                        .build();
+
+        // create provided service and return
         return retrofit.create(service);
     }
 

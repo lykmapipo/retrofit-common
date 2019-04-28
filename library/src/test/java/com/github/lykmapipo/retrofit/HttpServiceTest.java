@@ -70,7 +70,18 @@ public class HttpServiceTest {
         RecordedRequest request = mockWebServer.takeRequest();
 
         assertNotNull("should make success http call", users);
-        assertEquals("should make correct http call", request.getPath(), "/v1/users");
+        assertEquals(
+                "should make correct http call",
+                request.getPath(), "/v1/users"
+        );
+        assertEquals(
+                "should set default content type header",
+                request.getHeader("Content-Type"), "application/json"
+        );
+        assertEquals(
+                "should set default accept header",
+                request.getHeader("Accept"), "application/json"
+        );
     }
 
     @After
