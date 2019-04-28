@@ -35,6 +35,7 @@ dependencies {
     // retrofit dependencies
     implementation "com.google.code.gson:gson:${GSON_VERSION}"
     implementation "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${OKHTTP_VERSION}"
     implementation "com.squareup.retrofit2:retrofit:${RETROFIT_VERSION}"
     implementation "com.squareup.retrofit2:converter-gson:${RETROFIT_VERSION}"
 
