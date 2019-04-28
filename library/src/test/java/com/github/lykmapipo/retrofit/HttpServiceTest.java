@@ -1,14 +1,16 @@
 package com.github.lykmapipo.retrofit;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import java.io.IOException;
 import java.util.List;
 
+import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import retrofit2.Call;
 import retrofit2.http.GET;
 
@@ -24,11 +26,17 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(RobolectricTestRunner.class)
 public class HttpServiceTest {
     private MockWebServer mockWebServer;
+    private String baseUrl;
 
     @Before
-    public void setup() throws IOException {
+    public void setup() throws Exception {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
+    }
+
+    @Before
+    public void before() throws Exception {
+        baseUrl = mockWebServer.url("/v1/").toString();
     }
 
     @Test
@@ -48,18 +56,28 @@ public class HttpServiceTest {
     }
 
     @Test
-    public void shouldCreateSimpleService() {
-        String baseUrl = "https://api.example.com/v1/";
+    public void shouldCreateSimpleService() throws Exception {
+        // creation
         Api client = HttpService.create(Api.class, baseUrl);
-
         assertNotNull("should create simple client", client);
+
+        // invocation
+        String json = "[{\"name\":\"John Doe\"}]";
+        MockResponse response = new MockResponse().setResponseCode(200).setBody(json);
+        mockWebServer.enqueue(response);
+
+        List<User> users = client.list().execute().body();
+        RecordedRequest request = mockWebServer.takeRequest();
+
+        assertNotNull("should make success http call", users);
+        assertEquals("should make correct http call", request.getPath(), "/v1/users");
     }
 
-    @Before
-    public void tearDown() throws IOException {
-        if (mockWebServer != null) {
-            mockWebServer.shutdown();
-        }
+    @After
+    public void tearDown() throws Exception {
+        mockWebServer.shutdown();
+        baseUrl = null;
+        mockWebServer = null;
     }
 
     public interface Api {

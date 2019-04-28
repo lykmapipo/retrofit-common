@@ -27,7 +27,7 @@ dependencies {
 Create services using `retrofit-commom`
 
 ```java
-GitHubClient client = HttpService.createService(GitHubClient.class);
+GitHubClient client = HttpService.create(GitHubClient.class);
 ```
 
 
