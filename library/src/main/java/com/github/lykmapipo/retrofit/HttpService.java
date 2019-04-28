@@ -51,8 +51,32 @@ public class HttpService {
      */
     private static final OkHttpClient httpClient = new OkHttpClient();
 
+    /**
+     * Valid instance of {@link retrofit2.Retrofit.Builder} for reuse across
+     * retrofit instances.
+     *
+     * @since 0.1.0
+     */
     private static final Retrofit.Builder retrofitBuilder =
-            new Retrofit.Builder().addConverterFactory(gsonFactory);
+            new Retrofit.Builder()
+                    .addConverterFactory(gsonFactory)
+                    .client(httpClient);
+
+    /**
+     * Create an implementation of the API endpoints defined by the {@code service} interface.
+     *
+     * @param service valid retrofit service definition
+     * @param baseUrl valid service base url
+     * @return
+     */
+    @NonNull
+    public static <S> S create(
+            final Class<S> service, final String baseUrl
+    ) {
+        // create retrofit client
+        Retrofit retrofit = retrofitBuilder.baseUrl(baseUrl).build();
+        return retrofit.create(service);
+    }
 
     /**
      * Helper method to convert a generic object value to a json string
