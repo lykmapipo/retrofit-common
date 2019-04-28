@@ -1,7 +1,5 @@
 package com.github.lykmapipo.retrofit;
 
-import android.content.SharedPreferences;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -9,7 +7,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.lang.reflect.Modifier;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 
@@ -47,6 +44,7 @@ public class HttpService {
      *
      * @param value {@link java.lang.Object}
      * @return json {@link java.lang.String}
+     * @since 0.1.0
      */
     @Nullable
     public static synchronized <T> String toJson(@NonNull T value) {
@@ -64,6 +62,7 @@ public class HttpService {
      * @param value {@link java.lang.String}
      * @param type  {@link java.lang.Class}
      * @return object {@link java.lang.Object}
+     * @since 0.1.0
      */
     @Nullable
     public static synchronized <T> T fromJson(@NonNull String value, @NonNull Class<T> type) {
