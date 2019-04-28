@@ -24,7 +24,7 @@ dependencies {
 
 ## Usage
 
-Create services using `retrofit-commom`
+Create services using `retrofit-commom` default settings
 
 ```java
 public interface GitHubService {
@@ -32,7 +32,7 @@ public interface GitHubService {
   Call<List<Repo>> listRepos(@Path("user") String user);
 }
 
-GitHubClient client = HttpService.create(GitHubClient.class);
+GitHubService service = HttpService.create(GitHubService.class);
 
 Call<List<Repo>> repos = service.listRepos("octocat");
 ```
