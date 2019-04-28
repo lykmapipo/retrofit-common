@@ -67,7 +67,7 @@ public class HttpService {
      *
      * @param service valid retrofit service definition
      * @param baseUrl valid service base url
-     * @return
+     * @return an object of type S from the {@code service} creation
      */
     @NonNull
     public static <S> S create(
@@ -81,8 +81,9 @@ public class HttpService {
     /**
      * Helper method to convert a generic object value to a json string
      *
-     * @param value {@link java.lang.Object}
-     * @return json {@link java.lang.String}
+     * @param value the object for which Json representation is to be created
+     *              setting for Gson.
+     * @return json representation of {@code value}.
      * @since 0.1.0
      */
     @Nullable
@@ -98,9 +99,10 @@ public class HttpService {
     /**
      * Helper method to convert a json string to generic object value.
      *
-     * @param value {@link java.lang.String}
-     * @param type  {@link java.lang.Class}
-     * @return object {@link java.lang.Object}
+     * @param value valid json string value
+     * @param type  valid type of the desired object
+     * @return an object of type T from the string. Returns {@code null} if {@code value}
+     * is null or if {@code value} is empty.
      * @since 0.1.0
      */
     @Nullable
