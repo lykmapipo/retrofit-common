@@ -3,11 +3,14 @@ package com.github.lykmapipo.retrofit;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.github.lykmapipo.retrofit.interceptor.AuthInterceptor;
 import com.github.lykmapipo.retrofit.interceptor.HeadersInterceptor;
+import com.github.lykmapipo.retrofit.provider.AuthProvider;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.lang.reflect.Modifier;
+import java.util.Map;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -73,11 +76,29 @@ public class HttpService {
     public static <S> S create(
             final Class<S> service, final String baseUrl
     ) {
+        // create provided service and return
+        return create(service, baseUrl, null, null);
+    }
+
+    /**
+     * Create an implementation of the API endpoints defined by the {@code service} interface.
+     *
+     * @param service      valid retrofit service definition
+     * @param baseUrl      valid service base url
+     * @param authProvider valid authentication provider
+     * @param headers      valid http headers to apply on every request
+     * @return an object of type S from the {@code service} creation
+     */
+    @NonNull
+    public static <S> S create(
+            final Class<S> service, final String baseUrl,
+            final AuthProvider authProvider, final Map<String, String> headers
+    ) {
         // build http client with defaults
-        OkHttpClient client =
-                httpClient.newBuilder()
-                        .addInterceptor(new HeadersInterceptor())
-                        .build();
+        OkHttpClient.Builder httpClientBuilder = httpClient.newBuilder();
+        httpClientBuilder.addInterceptor(new HeadersInterceptor(headers));
+        httpClientBuilder.addInterceptor(new AuthInterceptor(authProvider));
+        OkHttpClient client = httpClientBuilder.build();
 
         // create retrofit client with defaults
         Retrofit retrofit =
