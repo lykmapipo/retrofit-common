@@ -83,6 +83,45 @@ public class HttpService {
     /**
      * Create an implementation of the API endpoints defined by the {@code service} interface.
      *
+     * @param service   valid retrofit service definition
+     * @param baseUrl   valid service base url
+     * @param authToken valid api authentication token(key)
+     * @return an object of type S from the {@code service} creation
+     */
+    @NonNull
+    public static <S> S create(
+            final Class<S> service, final String baseUrl,
+            final String authToken
+    ) {
+        // create provided service and return
+        AuthProvider authProvider = new AuthProvider() {
+            @Override
+            public String getToken() {
+                return authToken;
+            }
+        };
+        return create(service, baseUrl, authProvider, null);
+    }
+
+    /**
+     * Create an implementation of the API endpoints defined by the {@code service} interface.
+     *
+     * @param service      valid retrofit service definition
+     * @param baseUrl      valid service base url
+     * @param authProvider valid authentication provider
+     * @return an object of type S from the {@code service} creation
+     */
+    @NonNull
+    public static <S> S create(
+            final Class<S> service, final String baseUrl,
+            final AuthProvider authProvider
+    ) {
+        return create(service, baseUrl, authProvider, null);
+    }
+
+    /**
+     * Create an implementation of the API endpoints defined by the {@code service} interface.
+     *
      * @param service      valid retrofit service definition
      * @param baseUrl      valid service base url
      * @param authProvider valid authentication provider

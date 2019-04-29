@@ -1,5 +1,7 @@
 package com.github.lykmapipo.retrofit;
 
+import com.github.lykmapipo.retrofit.provider.AuthProvider;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +29,7 @@ import static org.junit.Assert.assertNotNull;
 public class HttpServiceTest {
     private MockWebServer mockWebServer;
     private String baseUrl;
+    private String authToken = "i3Vixpfr51EVHWHP";
 
     @Before
     public void setup() throws Exception {
@@ -56,7 +59,7 @@ public class HttpServiceTest {
     }
 
     @Test
-    public void shouldCreateSimpleService() throws Exception {
+    public void shouldCreateHttpService() throws Exception {
         // creation
         Api client = HttpService.create(Api.class, baseUrl);
         assertNotNull("should create simple client", client);
@@ -81,6 +84,77 @@ public class HttpServiceTest {
         assertEquals(
                 "should set default accept header",
                 request.getHeader("Accept"), "application/json"
+        );
+    }
+
+    @Test
+    public void shouldCreateHttpServiceWithAuthToken() throws Exception {
+        // creation
+        Api client = HttpService.create(Api.class, baseUrl, authToken);
+        assertNotNull("should create simple client", client);
+
+        // invocation
+        String json = "[{\"name\":\"John Doe\"}]";
+        MockResponse response = new MockResponse().setResponseCode(200).setBody(json);
+        mockWebServer.enqueue(response);
+
+        List<User> users = client.list().execute().body();
+        RecordedRequest request = mockWebServer.takeRequest();
+
+        assertNotNull("should make success http call", users);
+        assertEquals(
+                "should make correct http call",
+                request.getPath(), "/v1/users"
+        );
+        assertEquals(
+                "should set default content type header",
+                request.getHeader("Content-Type"), "application/json"
+        );
+        assertEquals(
+                "should set default accept header",
+                request.getHeader("Accept"), "application/json"
+        );
+        assertEquals(
+                "should set default accept header",
+                request.getHeader("Authorization"), "Bearer " + authToken
+        );
+    }
+
+    @Test
+    public void shouldCreateHttpServiceWithAuthProvider() throws Exception {
+        // creation
+        Api client = HttpService.create(Api.class, baseUrl, new AuthProvider() {
+            @Override
+            public String getToken() {
+                return authToken;
+            }
+        });
+        assertNotNull("should create simple client", client);
+
+        // invocation
+        String json = "[{\"name\":\"John Doe\"}]";
+        MockResponse response = new MockResponse().setResponseCode(200).setBody(json);
+        mockWebServer.enqueue(response);
+
+        List<User> users = client.list().execute().body();
+        RecordedRequest request = mockWebServer.takeRequest();
+
+        assertNotNull("should make success http call", users);
+        assertEquals(
+                "should make correct http call",
+                request.getPath(), "/v1/users"
+        );
+        assertEquals(
+                "should set default content type header",
+                request.getHeader("Content-Type"), "application/json"
+        );
+        assertEquals(
+                "should set default accept header",
+                request.getHeader("Accept"), "application/json"
+        );
+        assertEquals(
+                "should set default accept header",
+                request.getHeader("Authorization"), "Bearer " + authToken
         );
     }
 
