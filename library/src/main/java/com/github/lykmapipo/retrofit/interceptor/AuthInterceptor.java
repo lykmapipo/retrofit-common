@@ -38,7 +38,7 @@ public class AuthInterceptor implements Interceptor {
 
             // set auth headers
             if (!TextUtils.isEmpty(scheme) && !TextUtils.isEmpty(token)) {
-                String credential = scheme + " " + token;
+                String credential = scheme.trim() + " " + token.trim();
                 builder.header("Authorization", credential);
             }
         }

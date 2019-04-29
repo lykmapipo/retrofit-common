@@ -24,10 +24,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    // Lombok dependencies
-    compileOnly "org.projectlombok:lombok:${LOMBOK_VERSION}"
-    annotationProcessor "org.projectlombok:lombok:${LOMBOK_VERSION}"
-
     // Androidx dependencies
     implementation "androidx.annotation:annotation:${ANDROIDX_ANNOTATION_VERSION}"
     implementation "com.google.code.gson:gson:${GSON_VERSION}"
@@ -35,13 +31,13 @@ dependencies {
     // retrofit dependencies
     implementation "com.google.code.gson:gson:${GSON_VERSION}"
     implementation "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
-    implementation "com.squareup.okhttp3:logging-interceptor:${OKHTTP_VERSION}"
+    //implementation "com.squareup.okhttp3:logging-interceptor:${OKHTTP_VERSION}"
     implementation "com.squareup.retrofit2:retrofit:${RETROFIT_VERSION}"
     implementation "com.squareup.retrofit2:converter-gson:${RETROFIT_VERSION}"
 
     // misc dependencies
-    implementation "com.auth0.android:jwtdecode:${JWTDECODE_VERSION}"
-    implementation "com.github.lykmapipo:android-preference:${ANDROID_PREFERENCE_VERSION}"
+    //implementation "com.auth0.android:jwtdecode:${JWTDECODE_VERSION}"
+    //implementation "com.github.lykmapipo:android-preference:${ANDROID_PREFERENCE_VERSION}"
 
     // test dependencies
     testImplementation "junit:junit:${JUNIT_VERSION}"

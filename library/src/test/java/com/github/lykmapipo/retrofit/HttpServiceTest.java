@@ -1,6 +1,7 @@
 package com.github.lykmapipo.retrofit;
 
 import com.github.lykmapipo.retrofit.provider.AuthProvider;
+import com.google.gson.Gson;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,6 +41,12 @@ public class HttpServiceTest {
     @Before
     public void before() throws Exception {
         baseUrl = mockWebServer.url("/v1/").toString();
+    }
+
+    @Test
+    public void shouldExposeGsonInstance() {
+        Gson gson = HttpService.getGson();
+        assertNotNull("should provider gson instance for reuse", gson);
     }
 
     @Test

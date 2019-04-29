@@ -151,6 +151,16 @@ public class HttpService {
     }
 
     /**
+     * Valid instance of {@link Gson} for reuse.
+     *
+     * @since 0.1.0
+     */
+    @NonNull
+    public static Gson getGson() {
+        return gson;
+    }
+
+    /**
      * Helper method to convert a generic object value to a json string
      *
      * @param value the object for which Json representation is to be created
