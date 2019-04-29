@@ -32,7 +32,21 @@ public interface GitHubService {
   Call<List<Repo>> listRepos(@Path("user") String user);
 }
 
-GitHubService service = HttpService.create(GitHubService.class);
+GitHubService service = HttpService.create(GitHubService.class, "https://api.example.com/v1/");
+GitHubService service = HttpService.create(GitHubService.class, "https://api.example.com/v1/", "i3Vixpfr51EVHWHP");
+GitHubService service = HttpService.create(GitHubService.class, "https://api.example.com/v1/", 
+new AuthProvider() {
+    @Override
+    public String getScheme() {
+        return "Bearer";
+    }
+    
+    @Override
+    public String getToken() {
+        return "i3Vixpfr51EVHWHP";
+    }
+});
+                                                                                                          
 
 Call<List<Repo>> repos = service.listRepos("octocat");
 ```
