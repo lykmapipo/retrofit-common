@@ -3,7 +3,7 @@ package com.github.lykmapipo.retrofit;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.github.lykmapipo.retrofit.interceptor.DefaultHeadersInterceptor;
+import com.github.lykmapipo.retrofit.interceptor.HeadersInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -76,7 +76,7 @@ public class HttpService {
         // build http client with defaults
         OkHttpClient client =
                 httpClient.newBuilder()
-                        .addInterceptor(new DefaultHeadersInterceptor())
+                        .addInterceptor(new HeadersInterceptor())
                         .build();
 
         // create retrofit client with defaults

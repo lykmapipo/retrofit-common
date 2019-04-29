@@ -1,5 +1,7 @@
 package com.github.lykmapipo.retrofit.interceptor;
 
+import android.text.TextUtils;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -13,11 +15,11 @@ import okhttp3.Response;
  * @version 0.1.0
  * @since 0.1.0
  */
-public class AuthenticationBearerInterceptor implements Interceptor {
+public class AuthenticationInterceptor implements Interceptor {
 
     private String token;
 
-    public AuthenticationBearerInterceptor(String token) {
+    public AuthenticationInterceptor(String token) {
         this.token = token;
     }
 
@@ -25,9 +27,11 @@ public class AuthenticationBearerInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();
 
-        String bearer = "Bearer " + this.token;
-        Request.Builder builder = original.newBuilder()
-                .header("Authorization", bearer);
+        Request.Builder builder = original.newBuilder();
+        if (!TextUtils.isEmpty(this.token)) {
+            String bearer = "Bearer " + this.token;
+            builder.header("Authorization", bearer);
+        }
 
         Request request = builder.build();
         return chain.proceed(request);

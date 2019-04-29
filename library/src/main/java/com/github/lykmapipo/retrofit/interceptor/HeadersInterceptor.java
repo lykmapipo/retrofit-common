@@ -19,15 +19,15 @@ import okhttp3.Response;
  * @version 0.1.0
  * @since 0.1.0
  */
-public class DefaultHeadersInterceptor implements Interceptor {
+public class HeadersInterceptor implements Interceptor {
 
     private Map<String, String> providedHeaders;
 
-    public DefaultHeadersInterceptor(@Nullable Map<String, String> providedHeaders) {
+    public HeadersInterceptor(@Nullable Map<String, String> providedHeaders) {
         this.providedHeaders = providedHeaders;
     }
 
-    public DefaultHeadersInterceptor() {
+    public HeadersInterceptor() {
     }
 
     @Override
