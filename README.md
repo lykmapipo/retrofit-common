@@ -1,7 +1,7 @@
-retrofit-commom
+retrofit-common
 =======================
 
-[![](https://jitpack.io/v/lykmapipo/retrofit-commom.svg)](https://jitpack.io/#lykmapipo/retrofit-commom)
+[![](https://jitpack.io/v/lykmapipo/retrofit-common.svg)](https://jitpack.io/#lykmapipo/retrofit-common)
 
 Sensible [retrofit](https://github.com/square/retrofit) service creator for sustainable android client(s).
 
@@ -18,7 +18,7 @@ Add `retrofit-commom` dependency into your project
 
 ```gradle
 dependencies {
-    compile 'com.github.lykmapipo:retrofit-commom:v0.1.0'
+    compile 'com.github.lykmapipo:retrofit-common:v0.4.1'
 }
 ```
 
