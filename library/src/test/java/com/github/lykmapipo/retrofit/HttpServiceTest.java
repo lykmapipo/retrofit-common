@@ -16,6 +16,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -174,6 +175,9 @@ public class HttpServiceTest {
 
     public interface Api {
         @GET("users")
+        @Headers({
+                "Accept: application/json",
+        })
         Call<List<User>> list();
     }
 }

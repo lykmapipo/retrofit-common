@@ -48,7 +48,9 @@ public class HeadersInterceptor implements Interceptor {
         Request.Builder builder = original.newBuilder();
         for (String headerKey : defaultHeaders.keySet()) {
             String headerValue = defaultHeaders.get(headerKey);
-            if (!TextUtils.isEmpty(headerKey)) {
+            boolean shouldSetHeader = TextUtils.isEmpty(original.header(headerKey)) && !TextUtils.isEmpty(headerKey) && !TextUtils.isEmpty(headerValue);
+            if (shouldSetHeader) {
+                original.header(headerKey);
                 builder.header(headerKey, headerValue);
             }
         }
