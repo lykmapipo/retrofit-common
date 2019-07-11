@@ -14,7 +14,7 @@ allprojects {
     }
 }
 ```
-Add `retrofit-commom` dependency into your project
+Add `retrofit-common` dependency into your project
 
 ```gradle
 dependencies {
@@ -24,7 +24,7 @@ dependencies {
 
 ## Usage
 
-Create services using `retrofit-commom` default settings
+Create services using `retrofit-common` default settings
 
 ```java
 public interface GitHubService {
