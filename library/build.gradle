@@ -9,8 +9,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 50
-        versionName "0.5.0"
+        versionCode 51
+        versionName "0.5.1"
         consumerProguardFiles 'proguard-rules.pro'
     }
 
@@ -24,9 +24,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    // Androidx dependencies
+    // androidx dependencies
     implementation "androidx.annotation:annotation:${ANDROIDX_ANNOTATION_VERSION}"
-    implementation "com.google.code.gson:gson:${GSON_VERSION}"
 
     // retrofit dependencies
     implementation "com.google.code.gson:gson:${GSON_VERSION}"
@@ -34,10 +33,6 @@ dependencies {
     //implementation "com.squareup.okhttp3:logging-interceptor:${OKHTTP_VERSION}"
     implementation "com.squareup.retrofit2:retrofit:${RETROFIT_VERSION}"
     implementation "com.squareup.retrofit2:converter-gson:${RETROFIT_VERSION}"
-
-    // misc dependencies
-    //implementation "com.auth0.android:jwtdecode:${JWTDECODE_VERSION}"
-    //implementation "com.github.lykmapipo:android-preference:${ANDROID_PREFERENCE_VERSION}"
 
     // test dependencies
     testImplementation "junit:junit:${JUNIT_VERSION}"
