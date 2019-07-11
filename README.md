@@ -18,7 +18,7 @@ Add `retrofit-commom` dependency into your project
 
 ```gradle
 dependencies {
-    compile 'com.github.lykmapipo:retrofit-common:v0.5.0'
+    compile 'com.github.lykmapipo:retrofit-common:v0.5.1'
 }
 ```
 
