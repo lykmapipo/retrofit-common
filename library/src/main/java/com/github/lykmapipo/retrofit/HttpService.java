@@ -216,7 +216,7 @@ public class HttpService {
      *
      * @param params {@link Map}
      * @return {@link retrofit2.http.PartMap}
-     * @since 0.2.0
+     * @since 0.6.0
      */
     public static synchronized Map<String, RequestBody> createBodyParts(@NonNull Map<String, Object> params) {
         // initialize part map for request body
@@ -242,7 +242,7 @@ public class HttpService {
      *
      * @param files {@link Map}
      * @return {@link okhttp3.MultipartBody.Part}
-     * @since 0.2.0
+     * @since 0.6.0
      */
     public static synchronized List<MultipartBody.Part> createFileParts(
             @NonNull Map<String, Object> files
@@ -271,7 +271,7 @@ public class HttpService {
      *
      * @param params {@link Map}
      * @return {@link okhttp3.MultipartBody.Part}
-     * @since 0.2.0
+     * @since 0.6.0
      */
     public static synchronized List<MultipartBody.Part> createParts(
             @NonNull Map<String, Object> params
@@ -299,7 +299,7 @@ public class HttpService {
      *
      * @param value
      * @return
-     * @since 0.2.0
+     * @since 0.6.0
      */
     public static synchronized RequestBody createBodyPart(
             @NonNull String value
@@ -314,7 +314,7 @@ public class HttpService {
      * @param name
      * @param value
      * @return
-     * @since 0.2.0
+     * @since 0.6.0
      */
     public static synchronized MultipartBody.Part createPart(
             @NonNull String name, @NonNull Object value
@@ -332,7 +332,7 @@ public class HttpService {
      * @param name
      * @param value
      * @return
-     * @since 0.2.0
+     * @since 0.6.0
      */
     public static synchronized MultipartBody.Part createBodyPart(
             @NonNull String name, @NonNull Object value
@@ -348,7 +348,7 @@ public class HttpService {
      * @param name
      * @param file
      * @return {@link okhttp3.MultipartBody.Part}
-     * @since 0.2.0
+     * @since 0.6.0
      */
     @NonNull
     public static synchronized MultipartBody.Part createFilePart(
@@ -369,7 +369,7 @@ public class HttpService {
      * Obtain MIME type for the given file.
      *
      * @return
-     * @since 0.2.0
+     * @since 0.6.0
      */
     public static synchronized String mimeTypeFor(@NonNull File file) {
         try {
@@ -391,7 +391,7 @@ public class HttpService {
      * @param uri
      * @return Extension including the dot("."); "" if there is no extension;
      * null if uri was null.
-     * @since 0.2.0
+     * @since 0.6.0
      */
     @NonNull
     public static synchronized String extensionOf(@NonNull String uri) {
