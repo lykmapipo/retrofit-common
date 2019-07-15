@@ -218,9 +218,9 @@ public class HttpService {
      * @return {@link retrofit2.http.PartMap}
      * @since 0.2.0
      */
-    public static synchronized Map<String, RequestBody> toStringParts(@NonNull Map<String, Object> params) {
+    public static synchronized Map<String, RequestBody> createBodyParts(@NonNull Map<String, Object> params) {
         // initialize part map for request body
-        HashMap<String, RequestBody> partMap = new HashMap<String, RequestBody>();
+        HashMap<String, RequestBody> bodyParts = new HashMap<String, RequestBody>();
         // collect request body parts
         if (!params.isEmpty()) {
             for (String key : params.keySet()) {
@@ -228,23 +228,25 @@ public class HttpService {
                 boolean isAllowedPart =
                         !TextUtils.isEmpty(key) && value != null && !(value instanceof File);
                 if (isAllowedPart) {
-                    RequestBody part = createPart(key, String.valueOf(value));
-                    partMap.put(key, part);
+                    RequestBody part = createBodyPart(String.valueOf(value));
+                    bodyParts.put(key, part);
                 }
             }
         }
         // return part map request body
-        return partMap;
+        return bodyParts;
     }
 
     /**
-     * Helper method to convert map of files to map of multipart request body.
+     * Helper method to convert map of files to list of multipart request body.
      *
      * @param files {@link Map}
      * @return {@link okhttp3.MultipartBody.Part}
      * @since 0.2.0
      */
-    public static synchronized List<MultipartBody.Part> toFileParts(@NonNull Map<String, Object> files) {
+    public static synchronized List<MultipartBody.Part> createFileParts(
+            @NonNull Map<String, Object> files
+    ) {
         // initialize multipart list
         List<MultipartBody.Part> parts = new ArrayList<MultipartBody.Part>();
         // collect request body parts
@@ -255,7 +257,7 @@ public class HttpService {
                         !TextUtils.isEmpty(key) && (value instanceof File);
                 if (isAllowedPart) {
                     File file = (File) value;
-                    MultipartBody.Part part = createPart(key, file);
+                    MultipartBody.Part part = createFilePart(key, file);
                     parts.add(part);
                 }
             }
@@ -265,38 +267,62 @@ public class HttpService {
     }
 
     /**
-     * Obtain MIME type for the given file.
+     * Helper method to convert map of values to list of multipart parts.
      *
-     * @return
+     * @param params {@link Map}
+     * @return {@link okhttp3.MultipartBody.Part}
      * @since 0.2.0
      */
-    public static String mimeTypeFor(@NonNull File file) {
+    public static synchronized List<MultipartBody.Part> createParts(
+            @NonNull Map<String, Object> params
+    ) {
+        // initialize multipart list
+        List<MultipartBody.Part> parts = new ArrayList<MultipartBody.Part>();
+        if (!params.isEmpty()) {
+            for (String key : params.keySet()) {
+                Object value = params.get(key);
+                boolean isAllowedPart =
+                        !TextUtils.isEmpty(key) && value != null;
+                if (isAllowedPart) {
+                    MultipartBody.Part part = createPart(key, value);
+                    parts.add(part);
+                }
+            }
 
-        String extension = extensionOf(file.getName());
-
-        if (extension.length() > 0) {
-            return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.substring(1));
         }
-
-        return "application/octet-stream";
+        // return multipart list
+        return parts;
     }
 
     /**
-     * Gets the extension of a file name, like ".png" or ".jpg".
+     * Create {@link okhttp3.RequestBody} from given name and value
      *
-     * @param uri
-     * @return Extension including the dot("."); "" if there is no extension;
-     * null if uri was null.
+     * @param value
+     * @return
      * @since 0.2.0
      */
-    @NonNull
-    public static String extensionOf(@NonNull String uri) {
-        int dot = uri.lastIndexOf(".");
-        if (dot >= 0) {
-            return uri.substring(dot);
+    public static synchronized RequestBody createBodyPart(
+            @NonNull String value
+    ) {
+        RequestBody part = RequestBody.create(value, MultipartBody.FORM);
+        return part;
+    }
+
+    /**
+     * Create {@link okhttp3.MultipartBody.Part} for a given name and value
+     *
+     * @param name
+     * @param value
+     * @return
+     * @since 0.2.0
+     */
+    public static synchronized MultipartBody.Part createPart(
+            @NonNull String name, @NonNull Object value
+    ) {
+        if (value instanceof File) {
+            return createFilePart(name, (File) value);
         } else {
-            // No extension.
-            return "";
+            return createBodyPart(name, value);
         }
     }
 
@@ -308,7 +334,7 @@ public class HttpService {
      * @return
      * @since 0.2.0
      */
-    public static synchronized MultipartBody.Part createPart(
+    public static synchronized MultipartBody.Part createBodyPart(
             @NonNull String name, @NonNull Object value
     ) {
         MultipartBody.Part part =
@@ -316,24 +342,8 @@ public class HttpService {
         return part;
     }
 
-
     /**
-     * Create {@link okhttp3.RequestBody} from given name and value
-     *
-     * @param name
-     * @param value
-     * @return
-     * @since 0.2.0
-     */
-    public static synchronized RequestBody createPart(
-            @NonNull String name, @NonNull String value
-    ) {
-        RequestBody part = RequestBody.create(value, MultipartBody.FORM);
-        return part;
-    }
-
-    /**
-     * Create {@link okhttp3.MultipartBody.Part} for the give {@link File}
+     * Create {@link okhttp3.MultipartBody.Part} for a given {@link File}
      *
      * @param name
      * @param file
@@ -341,17 +351,56 @@ public class HttpService {
      * @since 0.2.0
      */
     @NonNull
-    public static synchronized MultipartBody.Part createPart(
+    public static synchronized MultipartBody.Part createFilePart(
             @NonNull String name, @NonNull File file
     ) {
         // create file RequestBody
         String mimeType = mimeTypeFor(file);
         MediaType mediaType = MediaType.parse(mimeType);
-        RequestBody requestFile = RequestBody.create(file, mediaType);
+        RequestBody bodyFile = RequestBody.create(file, mediaType);
 
-        // create MultipartBody.Part to send also the actual file name
+        // create MultipartBody.Part to send actual file name
         MultipartBody.Part part =
-                MultipartBody.Part.createFormData(name, file.getName(), requestFile);
+                MultipartBody.Part.createFormData(name, file.getName(), bodyFile);
         return part;
+    }
+
+    /**
+     * Obtain MIME type for the given file.
+     *
+     * @return
+     * @since 0.2.0
+     */
+    public static synchronized String mimeTypeFor(@NonNull File file) {
+        try {
+            String extension = extensionOf(file.getName()).substring(1);
+            MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+            String mimeType = mimeTypeMap.getMimeTypeFromExtension(extension);
+            if (TextUtils.isEmpty(mimeType)) {
+                return "application/octet-stream";
+            }
+            return mimeType;
+        } catch (Exception e) {
+            return "application/octet-stream";
+        }
+    }
+
+    /**
+     * Gets the extension of a file name, like ".png" or ".jpg".
+     *
+     * @param uri
+     * @return Extension including the dot("."); "" if there is no extension;
+     * null if uri was null.
+     * @since 0.2.0
+     */
+    @NonNull
+    public static synchronized String extensionOf(@NonNull String uri) {
+        int dot = uri.lastIndexOf(".");
+        if (dot >= 0) {
+            return uri.substring(dot);
+        } else {
+            // No extension.
+            return "";
+        }
     }
 }
