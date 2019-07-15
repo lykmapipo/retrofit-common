@@ -1,6 +1,7 @@
 package com.github.lykmapipo.retrofit;
 
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,15 +15,17 @@ import com.google.gson.GsonBuilder;
 
 import java.io.File;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.PartMap;
 
 /**
  * Sensible retrofit http service(s) creator
@@ -215,8 +218,8 @@ public class HttpService {
      * @return {@link retrofit2.http.PartMap}
      * @since 0.2.0
      */
-    public static synchronized Map<String, RequestBody> toPartMap(@NonNull Map<String, Object> params) {
-        // initialize party map for request body
+    public static synchronized Map<String, RequestBody> toStringParts(@NonNull Map<String, Object> params) {
+        // initialize part map for request body
         HashMap<String, RequestBody> partMap = new HashMap<String, RequestBody>();
         // collect request body parts
         if (!params.isEmpty()) {
@@ -225,12 +228,130 @@ public class HttpService {
                 boolean isAllowedPart =
                         !TextUtils.isEmpty(key) && value != null && !(value instanceof File);
                 if (isAllowedPart) {
-                    RequestBody part = RequestBody.create(String.valueOf(value), MultipartBody.FORM);
+                    RequestBody part = createPart(key, String.valueOf(value));
                     partMap.put(key, part);
                 }
             }
         }
         // return part map request body
         return partMap;
+    }
+
+    /**
+     * Helper method to convert map of files to map of multipart request body.
+     *
+     * @param files {@link Map}
+     * @return {@link okhttp3.MultipartBody.Part}
+     * @since 0.2.0
+     */
+    public static synchronized List<MultipartBody.Part> toFileParts(@NonNull Map<String, Object> files) {
+        // initialize multipart list
+        List<MultipartBody.Part> parts = new ArrayList<MultipartBody.Part>();
+        // collect request body parts
+        if (!files.isEmpty()) {
+            for (String key : files.keySet()) {
+                Object value = files.get(key);
+                boolean isAllowedPart =
+                        !TextUtils.isEmpty(key) && (value instanceof File);
+                if (isAllowedPart) {
+                    File file = (File) value;
+                    MultipartBody.Part part = createPart(key, file);
+                    parts.add(part);
+                }
+            }
+        }
+        // return multipart list
+        return parts;
+    }
+
+    /**
+     * Obtain MIME type for the given file.
+     *
+     * @return
+     * @since 0.2.0
+     */
+    public static String mimeTypeFor(@NonNull File file) {
+
+        String extension = extensionOf(file.getName());
+
+        if (extension.length() > 0) {
+            return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.substring(1));
+        }
+
+        return "application/octet-stream";
+    }
+
+    /**
+     * Gets the extension of a file name, like ".png" or ".jpg".
+     *
+     * @param uri
+     * @return Extension including the dot("."); "" if there is no extension;
+     * null if uri was null.
+     * @since 0.2.0
+     */
+    @NonNull
+    public static String extensionOf(@NonNull String uri) {
+        int dot = uri.lastIndexOf(".");
+        if (dot >= 0) {
+            return uri.substring(dot);
+        } else {
+            // No extension.
+            return "";
+        }
+    }
+
+    /**
+     * Create {@link MultipartBody.Part} from given name and value
+     *
+     * @param name
+     * @param value
+     * @return
+     * @since 0.2.0
+     */
+    public static synchronized MultipartBody.Part createPart(
+            @NonNull String name, @NonNull Object value
+    ) {
+        MultipartBody.Part part =
+                MultipartBody.Part.createFormData(name, String.valueOf(value));
+        return part;
+    }
+
+
+    /**
+     * Create {@link okhttp3.RequestBody} from given name and value
+     *
+     * @param name
+     * @param value
+     * @return
+     * @since 0.2.0
+     */
+    public static synchronized RequestBody createPart(
+            @NonNull String name, @NonNull String value
+    ) {
+        RequestBody part = RequestBody.create(value, MultipartBody.FORM);
+        return part;
+    }
+
+    /**
+     * Create {@link okhttp3.MultipartBody.Part} for the give {@link File}
+     *
+     * @param name
+     * @param file
+     * @return {@link okhttp3.MultipartBody.Part}
+     * @since 0.2.0
+     */
+    @NonNull
+    public static synchronized MultipartBody.Part createPart(
+            @NonNull String name, @NonNull File file
+    ) {
+        // create file RequestBody
+        String mimeType = mimeTypeFor(file);
+        MediaType mediaType = MediaType.parse(mimeType);
+        RequestBody requestFile = RequestBody.create(file, mediaType);
+
+        // create MultipartBody.Part to send also the actual file name
+        MultipartBody.Part part =
+                MultipartBody.Part.createFormData(name, file.getName(), requestFile);
+        return part;
     }
 }

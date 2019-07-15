@@ -27,7 +27,7 @@ public class HelpersTest {
         params.put("a", 17);
         params.put("b", "B");
 
-        Map<String, RequestBody> partMap = HttpService.toPartMap(params);
+        Map<String, RequestBody> partMap = HttpService.toStringParts(params);
         assertNotNull("should convert to part map", partMap);
         assertTrue("should convert to part map", !partMap.isEmpty());
         assertEquals("should have same size", partMap.size(), params.size());
