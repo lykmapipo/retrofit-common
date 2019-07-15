@@ -135,6 +135,8 @@ public class HttpService {
             final Class<S> service, final String baseUrl,
             final AuthProvider authProvider, final Map<String, String> headers
     ) {
+        //TODO use Provider(auth, headers, baseUrl)
+
         // build http client with defaults
         OkHttpClient.Builder httpClientBuilder = httpClient.newBuilder();
         httpClientBuilder.addInterceptor(new HeadersInterceptor(headers));
