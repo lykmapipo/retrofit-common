@@ -3,6 +3,7 @@ package com.github.lykmapipo.retrofit;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.github.lykmapipo.retrofit.adapter.TaskCallAdapterFactory;
 import com.github.lykmapipo.retrofit.interceptor.AuthInterceptor;
 import com.github.lykmapipo.retrofit.interceptor.HeadersInterceptor;
 import com.github.lykmapipo.retrofit.provider.AuthProvider;
@@ -63,6 +64,7 @@ public class HttpService {
      */
     private static final Retrofit.Builder retrofitBuilder =
             new Retrofit.Builder()
+                    .addCallAdapterFactory(TaskCallAdapterFactory.create())
                     .addConverterFactory(gsonFactory);
 
     /**
