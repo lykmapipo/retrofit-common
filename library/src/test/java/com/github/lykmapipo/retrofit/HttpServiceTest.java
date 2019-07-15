@@ -9,6 +9,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.MultipartBody;
@@ -24,6 +29,7 @@ import retrofit2.http.Part;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * HttpService Tests
@@ -168,6 +174,63 @@ public class HttpServiceTest {
                 "should set default accept header",
                 request.getHeader("Authorization"), "Bearer " + authToken
         );
+    }
+
+    @Test
+    public void shouldCreateMultipartRequest() throws Exception {
+        // creation
+        Api client = HttpService.create(Api.class, baseUrl, new AuthProvider() {
+            @Override
+            public String getToken() {
+                return authToken;
+            }
+        });
+
+        // create parts
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        File file = createRandomFile();
+        params.put("avatar", file);
+        params.put("name", "John Doe");
+        List<MultipartBody.Part> parts = HttpService.createParts(params);
+
+        // invocation
+        String json = "{\"name\":\"John Doe\"}";
+        MockResponse response = new MockResponse().setResponseCode(200).setBody(json);
+        mockWebServer.enqueue(response);
+
+        User user = client.create(parts).execute().body();
+        RecordedRequest request = mockWebServer.takeRequest();
+        String body = request.getBody().readUtf8();
+
+        assertNotNull("should make success http call", user);
+        assertEquals(
+                "should make correct http call",
+                request.getPath(), "/v1/users"
+        );
+        assertEquals(
+                "should make correct http call",
+                request.getMethod(), "POST"
+        );
+        assertTrue(
+                "should set default content type header",
+                request.getHeader("Content-Type").contains("multipart/form-data")
+        );
+        assertEquals(
+                "should set default accept header",
+                request.getHeader("Accept"), "application/json"
+        );
+        assertEquals(
+                "should set default accept header",
+                request.getHeader("Authorization"), "Bearer " + authToken
+        );
+    }
+
+    private File createRandomFile() throws IOException {
+        File file = File.createTempFile("test_", ".txt");
+        BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+        bw.write("This is the temporary file content");
+        bw.close();
+        return file;
     }
 
     @After
