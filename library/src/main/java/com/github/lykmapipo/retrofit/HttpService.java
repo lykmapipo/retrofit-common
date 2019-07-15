@@ -1,5 +1,7 @@
 package com.github.lykmapipo.retrofit;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -10,12 +12,17 @@ import com.github.lykmapipo.retrofit.provider.AuthProvider;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.File;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.PartMap;
 
 /**
  * Sensible retrofit http service(s) creator
@@ -199,5 +206,31 @@ public class HttpService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     * Helper method to convert map of object values to map of request body.
+     *
+     * @param params {@link Map}
+     * @return {@link retrofit2.http.PartMap}
+     * @since 0.2.0
+     */
+    public static synchronized Map<String, RequestBody> toPartMap(@NonNull Map<String, Object> params) {
+        // initialize party map for request body
+        HashMap<String, RequestBody> partMap = new HashMap<String, RequestBody>();
+        // collect request body parts
+        if (!params.isEmpty()) {
+            for (String key : params.keySet()) {
+                Object value = params.get(key);
+                boolean isAllowedPart =
+                        !TextUtils.isEmpty(key) && value != null && !(value instanceof File);
+                if (isAllowedPart) {
+                    RequestBody part = RequestBody.create(String.valueOf(value), MultipartBody.FORM);
+                    partMap.put(key, part);
+                }
+            }
+        }
+        // return part map request body
+        return partMap;
     }
 }
