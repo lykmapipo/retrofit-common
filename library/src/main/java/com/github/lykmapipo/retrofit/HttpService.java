@@ -4,17 +4,14 @@ import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import com.github.lykmapipo.common.Common;
 import com.github.lykmapipo.retrofit.adapter.TaskCallAdapterFactory;
 import com.github.lykmapipo.retrofit.interceptor.AuthInterceptor;
 import com.github.lykmapipo.retrofit.interceptor.HeadersInterceptor;
 import com.github.lykmapipo.retrofit.provider.AuthProvider;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.File;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,27 +33,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class HttpService {
     /**
-     * Valid instance of {@link Gson} for reuse across retrofit instances.
-     *
-     * @since 0.1.0
-     */
-    private static final Gson gson = new GsonBuilder()
-            .excludeFieldsWithModifiers(
-                    Modifier.FINAL, Modifier.TRANSIENT,
-                    Modifier.STATIC
-            )
-            .excludeFieldsWithoutExposeAnnotation()
-            .serializeNulls()
-            .create();
-
-    /**
      * Valid instance of {@link GsonConverterFactory} for reuse across
      * retrofit instances.
      *
      * @since 0.1.0
      */
     private static final GsonConverterFactory gsonFactory =
-            GsonConverterFactory.create(gson);
+            GsonConverterFactory.create(Common.gson());
 
     /**
      * Valid instance of {@link okhttp3.OkHttpClient} for reuse across
@@ -162,53 +145,6 @@ public class HttpService {
 
         // create provided service and return
         return retrofit.create(service);
-    }
-
-    /**
-     * Valid instance of {@link Gson} for reuse.
-     *
-     * @since 0.1.0
-     */
-    @NonNull
-    public static Gson getGson() {
-        return gson;
-    }
-
-    /**
-     * Helper method to convert a generic object value to a json string
-     *
-     * @param value the object for which Json representation is to be created
-     *              setting for Gson.
-     * @return json representation of {@code value}.
-     * @since 0.1.0
-     */
-    @Nullable
-    public static synchronized <T> String toJson(@NonNull T value) {
-        try {
-            String json = gson.toJson(value);
-            return json;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    /**
-     * Helper method to convert a json string to generic object value.
-     *
-     * @param value valid json string value
-     * @param type  valid type of the desired object
-     * @return an object of type T from the string. Returns {@code null} if {@code value}
-     * is null or if {@code value} is empty.
-     * @since 0.1.0
-     */
-    @Nullable
-    public static synchronized <T> T fromJson(@NonNull String value, @NonNull Class<T> type) {
-        try {
-            T val = gson.fromJson(value, type);
-            return val;
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     /**

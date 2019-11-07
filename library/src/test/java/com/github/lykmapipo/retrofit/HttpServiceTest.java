@@ -3,7 +3,6 @@ package com.github.lykmapipo.retrofit;
 import com.github.lykmapipo.retrofit.provider.AuthProvider;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
@@ -57,28 +56,6 @@ public class HttpServiceTest {
     @Before
     public void before() throws Exception {
         baseUrl = mockWebServer.url("/v1/").toString();
-    }
-
-    @Test
-    public void shouldExposeGsonInstance() {
-        Gson gson = HttpService.getGson();
-        assertNotNull("should provider gson instance for reuse", gson);
-    }
-
-    @Test
-    public void shouldConvertObjectToJson() {
-        User user = new User("John Doe");
-        String json = "{\"name\":\"John Doe\"}";
-        String converted = HttpService.toJson(user);
-        assertEquals("should convert value to json", converted, json);
-    }
-
-    @Test
-    public void shouldConvertJsonToObject() {
-        User user = new User("John Doe");
-        String json = "{\"name\":\"John Doe\"}";
-        User converted = HttpService.fromJson(json, User.class);
-        assertEquals("should convert json to value", converted, user);
     }
 
     @Test
