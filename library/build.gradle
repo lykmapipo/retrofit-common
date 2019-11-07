@@ -22,6 +22,7 @@ android {
 }
 
 dependencies {
+    // local dependencies
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // androidx dependencies
@@ -34,6 +35,9 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:${RETROFIT_VERSION}"
     implementation "com.squareup.retrofit2:converter-gson:${RETROFIT_VERSION}"
     implementation "com.github.lykmapipo:retrofit-play-tasks-adapter:${PLAY_TASKS_ADAPTER}"
+
+    // misc dependencies
+    implementation "com.github.lykmapipo:android-common:${ANDROID_COMMON_VERSION}"
 
     // test dependencies
     testImplementation "junit:junit:${JUNIT_VERSION}"
