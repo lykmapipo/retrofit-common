@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -72,7 +73,7 @@ public class HttpService {
             final Class<S> service, final String baseUrl
     ) {
         // create provided service and return
-        return create(service, baseUrl, null, null);
+        return create(service, baseUrl, null, null, null);
     }
 
     /**
@@ -89,13 +90,31 @@ public class HttpService {
             final String authToken
     ) {
         // create provided service and return
+        return create(service, baseUrl, authToken, null);
+    }
+
+    /**
+     * Create an implementation of the API endpoints defined by the {@code service} interface.
+     *
+     * @param service   valid retrofit service definition
+     * @param baseUrl   valid service base url
+     * @param authToken valid api authentication token(key)
+     * @param timeout   valid request(connect, read, write) timeout (in seconds). The default is 10 seconds.
+     * @return an object of type S from the {@code service} creation
+     */
+    @NonNull
+    public static <S> S create(
+            final Class<S> service, final String baseUrl,
+            final String authToken, final Long timeout
+    ) {
+        // create provided service and return
         AuthProvider authProvider = new AuthProvider() {
             @Override
             public String getToken() {
                 return authToken;
             }
         };
-        return create(service, baseUrl, authProvider, null);
+        return create(service, baseUrl, authProvider, null, timeout);
     }
 
     /**
@@ -120,20 +139,80 @@ public class HttpService {
      * @param service      valid retrofit service definition
      * @param baseUrl      valid service base url
      * @param authProvider valid authentication provider
-     * @param headers      valid http headers to apply on every request
+     * @param timeout      valid request(connect, read, write) timeout (in seconds). The default is 10 seconds.
      * @return an object of type S from the {@code service} creation
      */
     @NonNull
     public static <S> S create(
             final Class<S> service, final String baseUrl,
-            final AuthProvider authProvider, final Map<String, String> headers
+            final AuthProvider authProvider,
+            final Long timeout
+    ) {
+        // create provided service and return
+        return create(
+                service, baseUrl,
+                authProvider, null,
+                timeout
+        );
+    }
+
+    /**
+     * Create an implementation of the API endpoints defined by the {@code service} interface.
+     *
+     * @param service      valid retrofit service definition
+     * @param baseUrl      valid service base url
+     * @param authProvider valid authentication provider
+     * @param headers      valid http headers to apply on every request
+     * @param timeout      valid request(connect, read, write) timeout (in seconds). The default is 10 seconds.
+     * @return an object of type S from the {@code service} creation
+     */
+    @NonNull
+    public static <S> S create(
+            final Class<S> service, final String baseUrl,
+            final AuthProvider authProvider, final Map<String, String> headers,
+            final Long timeout
+    ) {
+        // create provided service and return
+        return create(
+                service, baseUrl,
+                authProvider, headers,
+                timeout, timeout, timeout
+        );
+    }
+
+    /**
+     * Create an implementation of the API endpoints defined by the {@code service} interface.
+     *
+     * @param service        valid retrofit service definition
+     * @param baseUrl        valid service base url
+     * @param authProvider   valid authentication provider
+     * @param headers        valid http headers to apply on every request
+     * @param connectTimeout valid connect timeout (in seconds). The default is 10 seconds.
+     * @param readTimeout    valid read timeout (in seconds). The default is 10 seconds.
+     * @param writeTimeout   valid write timeout (in seconds). The default is 10 seconds.
+     * @return an object of type S from the {@code service} creation
+     */
+    @NonNull
+    public static <S> S create(
+            final Class<S> service, final String baseUrl,
+            final AuthProvider authProvider, final Map<String, String> headers,
+            final Long connectTimeout, final Long readTimeout, final Long writeTimeout
     ) {
         //TODO use Provider(auth, headers, baseUrl)
 
         // build http client with defaults
         OkHttpClient.Builder httpClientBuilder = httpClient.newBuilder();
+
+        // apply timeouts
+        httpClientBuilder.connectTimeout(connectTimeout != null ? connectTimeout : 10, TimeUnit.SECONDS);
+        httpClientBuilder.readTimeout(readTimeout != null ? readTimeout : 10, TimeUnit.SECONDS);
+        httpClientBuilder.writeTimeout(writeTimeout != null ? writeTimeout : 10, TimeUnit.SECONDS);
+
+        // add common interceptors
         httpClientBuilder.addInterceptor(new HeadersInterceptor(headers));
         httpClientBuilder.addInterceptor(new AuthInterceptor(authProvider));
+
+        // build client
         OkHttpClient client = httpClientBuilder.build();
 
         // create retrofit client with defaults
